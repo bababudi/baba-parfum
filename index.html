@@ -674,6 +674,22 @@ document.getElementById('btnAddProduct').addEventListener('click', async ()=>{
   const sell = parseFloat(document.getElementById('pSell').value);
   const stock = parseInt(document.getElementById('pStock').value) || 0;
   if(!name || !buy || !sell){ showToast('Lengkapi nama, harga beli, dan harga jual'); return; }
+
+  const existing = data.products.find(p => p.name.trim().toLowerCase() === name.toLowerCase());
+  if(existing){
+    existing.stock += stock;
+    existing.buy = buy;
+    existing.sell = sell;
+    await saveData();
+    document.getElementById('pName').value='';
+    document.getElementById('pBuy').value='';
+    document.getElementById('pSell').value='';
+    document.getElementById('pStock').value='';
+    renderStockTable(); renderProductSelect(); renderLowStock(); renderCapital();
+    showToast(`Stok "${existing.name}" digabung, sekarang ${existing.stock}`);
+    return;
+  }
+
   data.products.push({id:uid(), name, buy, sell, stock});
   await saveData();
   document.getElementById('pName').value='';
