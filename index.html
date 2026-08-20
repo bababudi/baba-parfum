@@ -50,11 +50,9 @@
     display:flex; align-items:center; justify-content:space-between;
   }
   .brand-row{ display:flex; align-items:center; gap:10px; }
-  .droplet{
-    width:24px; height:30px; flex:none;
-    background:linear-gradient(160deg, var(--gold-soft), var(--gold) 60%, #8f7328);
-    clip-path: path('M12 0 C12 0 24 17 24 23 A12 12 0 0 1 0 23 C0 17 12 0 12 0 Z');
-    box-shadow: 0 3px 10px rgba(201,162,75,0.35);
+  .brand-bottle{
+    height:34px; width:auto; flex:none;
+    filter:drop-shadow(0 3px 8px rgba(201,162,75,0.30));
   }
   header.top .brand-name{ font-family:'Fraunces',serif; font-size:16px; font-weight:600; line-height:1.1; }
   header.top .page-title{ color:var(--ink-dim); font-size:12.5px; text-align:right; }
@@ -240,7 +238,7 @@
 
 <header class="top">
   <div class="brand-row">
-    <div class="droplet"></div>
+    <img class="brand-bottle" src="./bottle-header.png" alt="Baba Parfum">
     <div class="brand-name">Baba Parfum</div>
   </div>
   <div class="page-title">Dashboard <b id="pageTitleTag">Ringkasan</b></div>
@@ -847,6 +845,10 @@ function renderActivity(){
 
 // ---------- CHARTS ----------
 function renderCharts(){
+  if(typeof Chart === 'undefined'){
+    console.warn('Chart.js belum termuat, grafik dilewati sementara');
+    return;
+  }
   const monthNames = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   const year = new Date().getFullYear();
   document.getElementById('monthlyYearLabel').textContent = `Tahun ${year}`;
@@ -896,19 +898,37 @@ function chartOptions(){
 }
 
 // ---------- INIT ----------
+function safeRun(fn){
+  try{ fn(); }catch(e){ console.error('render gagal:', fn.name, e); }
+}
+
 (async function init(){
   document.getElementById('saleDate').value = todayISO();
   document.getElementById('eDate').value = todayISO();
   await loadData();
-  renderProductSelect();
-  renderStockTable();
-  renderSalesTable();
-  renderExpenseTable();
-  renderStats();
-  renderCharts();
-  renderLowStock();
-  renderActivity();
-  renderCapital();
+  safeRun(renderProductSelect);
+  safeRun(renderStockTable);
+  safeRun(renderSalesTable);
+  safeRun(renderExpenseTable);
+  safeRun(renderStats);
+  safeRun(renderLowStock);
+  safeRun(renderActivity);
+  safeRun(renderCapital);
+  safeRun(renderCharts);
+
+  // coba render ulang grafik begitu Chart.js benar-benar siap (jaga-jaga koneksi lambat saat load pertama)
+  if(typeof Chart === 'undefined'){
+    let tries = 0;
+    const retryChart = setInterval(()=>{
+      tries++;
+      if(typeof Chart !== 'undefined'){
+        safeRun(renderCharts);
+        clearInterval(retryChart);
+      } else if(tries > 10){
+        clearInterval(retryChart);
+      }
+    }, 500);
+  }
 })();
 </script>
 <script>
