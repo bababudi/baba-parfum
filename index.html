@@ -84,6 +84,7 @@
   .stat.profit .value{ color:var(--gold-soft); }
   .stat.income .value{ color:var(--good); }
   .stat.expense .value{ color:var(--bad); }
+  .stat.cash .value{ color:#8FB6C4; }
   .stat .sub{ font-size:11px; color:var(--ink-faint); margin-top:4px; }
 
   .quick-actions{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
@@ -218,11 +219,12 @@
   #confirmOk{ background:linear-gradient(160deg, #D98080, var(--bad)); color:#2A1414; border:none; }
 
   /* modal-di-stok widget */
-  .capital-top{ display:flex; gap:16px; margin-bottom:14px; }
-  .capital-top .box{ flex:1; }
-  .capital-top .box-label{ font-size:11px; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-faint); font-weight:700; }
-  .capital-top .box-value{ font-family:'Fraunces',serif; font-size:22px; font-weight:600; margin-top:6px; color:var(--gold-soft); }
+  .capital-top{ display:flex; gap:10px; margin-bottom:14px; }
+  .capital-top .box{ flex:1; min-width:0; }
+  .capital-top .box-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-faint); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .capital-top .box-value{ font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-top:6px; color:var(--gold-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .capital-top .box-value.bottles{ color:var(--ink); }
+  .capital-top .box-value.cash{ color:#8FB6C4; }
   .capital-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
   .capital-row:last-child{ border-bottom:none; }
   .capital-row .bicon{ font-size:14px; flex:none; }
@@ -261,6 +263,10 @@
           <div class="box-label">Total Botol</div>
           <div class="box-value bottles" id="capitalBottles">0</div>
         </div>
+        <div class="box">
+          <div class="box-label">Cash</div>
+          <div class="box-value cash" id="capitalCash">Rp0</div>
+        </div>
       </div>
     </div>
 
@@ -271,10 +277,15 @@
         <div class="value" id="statIncome">Rp0</div>
         <div class="sub">total penjualan</div>
       </div>
+      <div class="stat cash">
+        <div class="label">Modal Kembali</div>
+        <div class="value" id="statCash">Rp0</div>
+        <div class="sub">modal balik jadi kas</div>
+      </div>
       <div class="stat expense">
         <div class="label">Pengeluaran</div>
         <div class="value" id="statExpense">Rp0</div>
-        <div class="sub" id="statExpenseSub">modal + biaya lain</div>
+        <div class="sub">biaya operasional lain</div>
       </div>
       <div class="stat profit">
         <div class="label">Profit Bersih</div>
@@ -812,8 +823,8 @@ function renderStats(){
   const profit = income - cogs - otherExpense;
 
   document.getElementById('statIncome').textContent = rupiah(income);
-  document.getElementById('statExpense').textContent = rupiah(cogs+otherExpense);
-  document.getElementById('statExpenseSub').textContent = `modal ${rupiah(cogs)} + lain ${rupiah(otherExpense)}`;
+  document.getElementById('statCash').textContent = rupiah(cogs);
+  document.getElementById('statExpense').textContent = rupiah(otherExpense);
   document.getElementById('statProfit').textContent = rupiah(profit);
 }
 
@@ -821,8 +832,10 @@ function renderStats(){
 function renderCapital(){
   const totalValue = data.products.reduce((a,p)=> a + p.buy*p.stock, 0);
   const totalBottles = data.products.reduce((a,p)=> a + p.stock, 0);
+  const totalCash = data.sales.reduce((a,s)=> a + s.buy*s.qty, 0);
   document.getElementById('capitalValue').textContent = rupiah(totalValue);
   document.getElementById('capitalBottles').textContent = `${totalBottles} botol`;
+  document.getElementById('capitalCash').textContent = rupiah(totalCash);
 }
 
 // ---------- LOW STOCK WIDGET ----------
