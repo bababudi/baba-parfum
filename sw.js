@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baba-parfum-v3';
+const CACHE_NAME = 'baba-parfum-v4';
 const CORE_ASSETS = [
   './',
   './index.html',

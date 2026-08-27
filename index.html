@@ -277,11 +277,6 @@
         <div class="value" id="statIncome">Rp0</div>
         <div class="sub">total penjualan</div>
       </div>
-      <div class="stat cash">
-        <div class="label">Modal Kembali</div>
-        <div class="value" id="statCash">Rp0</div>
-        <div class="sub">modal balik jadi kas</div>
-      </div>
       <div class="stat expense">
         <div class="label">Pengeluaran</div>
         <div class="value" id="statExpense">Rp0</div>
@@ -823,7 +818,6 @@ function renderStats(){
   const profit = income - cogs - otherExpense;
 
   document.getElementById('statIncome').textContent = rupiah(income);
-  document.getElementById('statCash').textContent = rupiah(cogs);
   document.getElementById('statExpense').textContent = rupiah(otherExpense);
   document.getElementById('statProfit').textContent = rupiah(profit);
 }
